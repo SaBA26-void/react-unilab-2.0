@@ -52,7 +52,7 @@ const ProductListing = () => {
   const [filters, setFilters] = useState<FilterState>({
     brands: [],
     colors: [],
-    priceRange: { min: 60, max: 450 },
+    priceRange: { min: 0, max: 9999 },
     sizes: [],
     sortBy: "default",
   });
@@ -82,7 +82,7 @@ const ProductListing = () => {
   const filteredProducts = useMemo(() => {
     if (!products) return [];
 
-    let result = products.filter((product) => {
+    const result = products.filter((product) => {
       if (
         filters.brands.length > 0 &&
         !filters.brands.includes(product.brand)

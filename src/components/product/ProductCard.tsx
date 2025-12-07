@@ -1,22 +1,30 @@
-import { Link } from 'react-router-dom';
-import { Heart, Star, ShoppingBag } from 'lucide-react';
-import { Product } from '@/types/product';
-import { Badge } from '@/components/ui/badge';
-import CountdownTimer from './CountdownTimer';
+import { Link } from "react-router-dom";
+import { Heart, Star, ShoppingBag } from "lucide-react";
+import { Product } from "@/types/product";
+import { Badge } from "@/components/ui/badge";
+import CountdownTimer from "./CountdownTimer";
+import { useState } from "react";
 
 interface ProductCardProps {
   product: Product;
   showCountdown?: boolean;
-  variant?: 'default' | 'compact' | 'featured' | 'top100';
+  variant?: "default" | "compact" | "featured" | "top100";
 }
 
-const ProductCard = ({ product, showCountdown = false, variant = 'default' }: ProductCardProps) => {
-  const placeholderImage = 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=400&h=500&fit=crop';
+const ProductCard = ({
+  product,
+  showCountdown = false,
+  variant = "default",
+}: ProductCardProps) => {
+  const placeholderImage =
+    "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=400&h=500&fit=crop";
   const imageUrl = product.images?.[0] || placeholderImage;
   const starRating = Math.round(product.rating / 20);
 
+  const [countdownExpired, setCountdownExpired] = useState(false);
+
   // Featured variant - New Arrivals card with dark bottom bar
-  if (variant === 'featured') {
+  if (variant === "featured") {
     return (
       <Link
         to={`/product/${product.id}`}
@@ -31,7 +39,7 @@ const ProductCard = ({ product, showCountdown = false, variant = 'default' }: Pr
             (e.target as HTMLImageElement).src = placeholderImage;
           }}
         />
-        
+
         {/* New Arrivals Badge */}
         {product.isNew && (
           <Badge className="absolute top-4 left-4 bg-success text-primary-foreground text-xs px-3 py-1.5 flex items-center gap-1.5 rounded-md">
@@ -44,8 +52,12 @@ const ProductCard = ({ product, showCountdown = false, variant = 'default' }: Pr
         <div className="absolute inset-x-0 bottom-0 p-5 bg-foreground/95 rounded-b-xl">
           <div className="flex items-end justify-between">
             <div>
-              <p className="text-primary-foreground font-semibold text-lg mb-1">{product.title}</p>
-              <p className="text-primary-foreground/60 text-sm">{product.short_description?.slice(0, 25)}</p>
+              <p className="text-primary-foreground font-semibold text-lg mb-1">
+                {product.title}
+              </p>
+              <p className="text-primary-foreground/60 text-sm">
+                {product.short_description?.slice(0, 25)}
+              </p>
             </div>
             <button className="bg-card text-foreground px-4 py-2.5 text-sm font-medium rounded-lg hover:bg-secondary transition-colors whitespace-nowrap">
               ${product.price.toFixed(0)} Shop Now
@@ -56,8 +68,8 @@ const ProductCard = ({ product, showCountdown = false, variant = 'default' }: Pr
     );
   }
 
-  // Top100/Standard variant - card with heart icon and star ratings
-  if (variant === 'top100') {
+  // Top100 variant - card with heart icon and star ratings
+  if (variant === "top100") {
     return (
       <Link
         to={`/product/${product.id}`}
@@ -68,7 +80,7 @@ const ProductCard = ({ product, showCountdown = false, variant = 'default' }: Pr
           <img
             src={imageUrl}
             alt={product.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            className="max-w-[300px] max-h-[327px] min-h-[327px] object-cover group-hover:scale-105 transition-transform duration-500"
             onError={(e) => {
               (e.target as HTMLImageElement).src = placeholderImage;
             }}
@@ -89,11 +101,11 @@ const ProductCard = ({ product, showCountdown = false, variant = 'default' }: Pr
               <Heart className="h-4 w-4 text-muted-foreground" />
             </button>
           </div>
-          
+
           <p className="text-sm text-muted-foreground line-clamp-1 mb-2">
             {product.short_description}
           </p>
-          
+
           {/* Star Rating */}
           <div className="flex items-center gap-1 mb-2">
             {[...Array(5)].map((_, i) => (
@@ -101,23 +113,29 @@ const ProductCard = ({ product, showCountdown = false, variant = 'default' }: Pr
                 key={i}
                 className={`h-4 w-4 ${
                   i < starRating
-                    ? 'fill-yellow text-yellow'
-                    : 'fill-muted text-muted'
+                    ? "fill-yellow text-yellow"
+                    : "fill-muted text-muted"
                 }`}
               />
             ))}
-            <span className="text-sm text-muted-foreground ml-1">({product.rating})</span>
+            <span className="text-sm text-muted-foreground ml-1">
+              ({product.rating})
+            </span>
           </div>
 
           {/* Price */}
           <div className="flex items-center gap-2">
-            <span className="font-bold text-accent">${product.price.toFixed(0)}</span>
+            <span className="font-bold text-accent">
+              ${product.price.toFixed(0)}
+            </span>
             {product.oldPrice && (
               <>
                 <span className="text-sm text-muted-foreground line-through">
                   ${product.oldPrice.toFixed(0)}
                 </span>
-                <span className="text-sm text-accent font-medium">-{product.discountPercent}%</span>
+                <span className="text-sm text-accent font-medium">
+                  -{product.discountPercent}%
+                </span>
               </>
             )}
           </div>
@@ -133,8 +151,8 @@ const ProductCard = ({ product, showCountdown = false, variant = 'default' }: Pr
       className="group block bg-card rounded-xl overflow-hidden hover-lift border border-border w-[280px] p-4"
     >
       {/* Countdown Timer */}
-      {showCountdown && (
-        <CountdownTimer />
+      {showCountdown && !countdownExpired && (
+        <CountdownTimer onExpire={() => setCountdownExpired(true)} />
       )}
 
       {/* Image Container */}
@@ -151,9 +169,13 @@ const ProductCard = ({ product, showCountdown = false, variant = 'default' }: Pr
 
       {/* Content */}
       <div>
-        <p className="font-bold text-foreground text-lg mb-1">{product.brand}</p>
-        <p className="text-sm text-muted-foreground line-clamp-1 mb-3">{product.short_description}</p>
-        
+        <p className="font-bold text-foreground text-lg mb-1">
+          {product.brand}
+        </p>
+        <p className="text-sm text-muted-foreground line-clamp-1 mb-3">
+          {product.short_description}
+        </p>
+
         {/* Star Rating */}
         <div className="flex items-center gap-1 mb-3">
           {[...Array(5)].map((_, i) => (
@@ -161,18 +183,22 @@ const ProductCard = ({ product, showCountdown = false, variant = 'default' }: Pr
               key={i}
               className={`h-4 w-4 ${
                 i < starRating
-                  ? 'fill-yellow text-yellow'
-                  : 'fill-muted text-muted'
+                  ? "fill-yellow text-yellow"
+                  : "fill-muted text-muted"
               }`}
             />
           ))}
-          <span className="text-sm text-muted-foreground ml-1">({product.rating})</span>
+          <span className="text-sm text-muted-foreground ml-1">
+            ({product.rating})
+          </span>
         </div>
 
         {/* Price */}
         <div className="flex items-center gap-2">
-          <span className="font-bold text-accent text-lg">${product.price.toFixed(2)}</span>
-          {product.oldPrice && (
+          <span className="font-bold text-accent text-lg">
+            ${product.price.toFixed(2)}
+          </span>
+          {!countdownExpired && product.oldPrice && (
             <>
               <span className="text-sm text-muted-foreground line-through">
                 ${product.oldPrice.toFixed(2)}
@@ -183,6 +209,13 @@ const ProductCard = ({ product, showCountdown = false, variant = 'default' }: Pr
             </>
           )}
         </div>
+
+        {/* Deal Ended Badge */}
+        {countdownExpired && (
+          <Badge className="mt-2 bg-muted text-muted-foreground text-xs px-2 py-0.5">
+            Deal Ended
+          </Badge>
+        )}
       </div>
     </Link>
   );

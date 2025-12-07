@@ -1,12 +1,17 @@
-import Layout from '@/components/layout/Layout';
-import HeroBanner from '@/components/home/HeroBanner';
-import ProductCarousel from '@/components/product/ProductCarousel';
-import PromoBanners from '@/components/home/PromoBanners';
-import { useDiscountProducts, useNewArrivals, useTopRated } from '@/hooks/useProducts';
-import { Skeleton } from '@/components/ui/skeleton';
+import Layout from "@/components/layout/Layout";
+import HeroBanner from "@/components/home/HeroBanner";
+import ProductCarousel from "@/components/product/ProductCarousel";
+import PromoBanners from "@/components/home/PromoBanners";
+import {
+  useDiscountProducts,
+  useNewArrivals,
+  useTopRated,
+} from "@/hooks/useProducts";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Index = () => {
-  const { data: discountProducts, isLoading: discountLoading } = useDiscountProducts();
+  const { data: discountProducts, isLoading: discountLoading } =
+    useDiscountProducts();
   const { data: newArrivals, isLoading: newLoading } = useNewArrivals();
   const { data: topRated, isLoading: topLoading } = useTopRated();
 
@@ -15,7 +20,7 @@ const Index = () => {
   return (
     <Layout>
       <HeroBanner />
-      
+
       <div className="container mx-auto px-4 py-8">
         {isLoading ? (
           <div className="py-8">
@@ -49,7 +54,7 @@ const Index = () => {
 
             <ProductCarousel
               title="Top100"
-              products={topRated?.slice(0, 20) || []}
+              products={topRated?.slice(0, 100) || []}
               variant="top100"
               viewAllLink="/women"
             />

@@ -2,11 +2,15 @@ import { useState, useEffect } from "react";
 
 interface CountdownTimerProps {
   initialHours?: number;
+  onExpire?: () => void; // callback to parent
 }
 
-const CountdownTimer = ({ initialHours = 24 }: CountdownTimerProps) => {
+const CountdownTimer = ({
+  initialHours = 0,
+  onExpire,
+}: CountdownTimerProps) => {
   const [timeLeft, setTimeLeft] = useState(() => {
-    const randomOffset = Math.floor(Math.random() * 12);
+    const randomOffset = Math.floor(Math.random() * 1);
     return {
       hours: initialHours - randomOffset,
       minutes: Math.floor(Math.random() * 60),
@@ -18,6 +22,12 @@ const CountdownTimer = ({ initialHours = 24 }: CountdownTimerProps) => {
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         let { hours, minutes, seconds } = prev;
+
+        if (hours === 0 && minutes === 0 && seconds === 0) {
+          clearInterval(timer);
+          if (onExpire) onExpire(); // notify parent
+          return prev;
+        }
 
         if (seconds > 0) {
           seconds--;
@@ -35,7 +45,7 @@ const CountdownTimer = ({ initialHours = 24 }: CountdownTimerProps) => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [onExpire]);
 
   const formatNumber = (num: number) => num.toString().padStart(2, "0");
 
